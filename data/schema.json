@@ -23,48 +23,71 @@
             "additionalProperties": false,
             "properties": {
                 "docker": {
-                    "oneOf": [{
-                        "type": "string"
-                    },{
-                        "type": "array",
-                        "items": {
+                    "oneOf": [
+                        {
                             "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "boolean",
+                            "enum": [
+                                false
+                            ],
+                            "description": "Disable the ECR image check"
                         }
-                    }]
+                    ]
                 },
                 "s3": {
-                    "oneOf": [{
-                        "type": "string"
-                    },{
-                        "type": "array",
-                        "items": {
+                    "oneOf": [
+                        {
                             "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "boolean",
+                            "enum": [
+                                false
+                            ],
+                            "description": "Disable the S3 artifact check"
                         }
-                    }]
+                    ]
                 }
             }
         },
         "tags": {
             "type": "array",
             "items": {
-                "oneOf": [{
-                    "type": "string"
-                },{
-                    "type": "object",
-                    "required": [
-                        "Key",
-                        "Value"
-                    ],
-                    "additionalProperties": false,
-                    "properties": {
-                        "Key": {
-                            "type": "string"
-                        },
-                        "Value": {
-                            "type": "string"
+                "oneOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "Key",
+                            "Value"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                            "Key": {
+                                "type": "string"
+                            },
+                            "Value": {
+                                "type": "string"
+                            }
                         }
                     }
-                }]
+                ]
             }
         }
     }
