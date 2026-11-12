@@ -417,4 +417,42 @@ describe('Credentials.generate', () => {
             await expect(Credentials.generate(makeArgv())).rejects.toThrow('~/.deployrc.json does not conform to schema');
         });
     });
+
+    describe('.deploy file schema validation', () => {
+        function mockDotDeploy(content: unknown): void {
+            vi.spyOn(fs, 'existsSync').mockImplementation((p) => String(p).endsWith('.deploy'));
+
+            const original = fs.readFileSync.bind(fs);
+            vi.spyOn(fs, 'readFileSync').mockImplementation(((filePath: fs.PathOrFileDescriptor, options?: BufferEncoding | { encoding?: BufferEncoding | null; flag?: string } | null) => {
+                if (String(filePath).endsWith('.deploy')) {
+                    return JSON.stringify(content);
+                }
+
+                return original(filePath, options as never);
+            }) as typeof fs.readFileSync);
+        }
+
+        it.each([
+            ['docker: false', { docker: false }],
+            ['s3: false', { s3: false }],
+            ['docker and s3 both false', { docker: false, s3: false }],
+            ['docker as a string', { docker: '{{project}}:{{gitsha}}' }],
+            ['s3 as an array', { s3: ['bucket/{{gitsha}}.zip'] }]
+        ])('accepts artifacts with %s', (_label, artifacts) => {
+            mockDotDeploy({ artifacts });
+
+            expect(Credentials.dot_deploy()).toEqual({ artifacts });
+        });
+
+        it.each([
+            ['docker: true', { docker: true }],
+            ['s3: true', { s3: true }],
+            ['docker as a number', { docker: 1 }]
+        ])('rejects artifacts with %s', (_label, artifacts) => {
+            mockDotDeploy({ artifacts });
+            vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+            expect(() => Credentials.dot_deploy()).toThrow('does not conform to schema');
+        });
+    });
 });
