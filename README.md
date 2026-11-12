@@ -214,7 +214,7 @@ via the `.deploy` file.
 }
 ```
 
-### Watching for Docker Artifacts
+### Watching for S3 Artifacts
 
 Lambda uploads are not watched for by default. Set artifact listeners via your `.deploy` file
 using the examples below to ensure that they are present on s3 before deploy.
